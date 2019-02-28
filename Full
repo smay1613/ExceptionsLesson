@@ -1,0 +1,244 @@
+// Example program
+#include <iostream>
+#include <string>
+#include <errno.h>
+#include <cassert>
+#include <stdexcept>
+
+// Please read http://wiki.c2.com/?ExceptionGuarantee
+
+/*==============================================================
+double division(int a, int b) {
+   if(b == 0) {
+      exit(1); // Just go to hell, user!
+   }
+   return a / b;
+}
+==============================================================*/
+
+
+
+/*==============================================================
+static const int DivisionErrorCode {-42};
+double division(int a, int b) {
+   if(b == 0) {
+      return DivisionErrorCode; // 42 will not be computed so often, I hope....
+   }
+   return a / b;
+}
+==============================================================*/
+
+
+
+/*==============================================================
+double division(int a, int b) {
+   if(b == 0) {
+      return 0; // What!?
+   }
+   return a / b;
+}
+==============================================================*/
+
+
+
+/*==============================================================
+#define DIVZERO 0x004
+
+double division(int a, int b) {
+  if(b == 0) {
+      errno = DIVZERO; // Hope user will do something with it...
+      return 0;
+  }
+  return a / b;
+}
+==============================================================*/
+
+
+
+/*==============================================================
+void errorHandler()
+{
+    // What the point of my life? What should I do?
+    return;
+}
+
+double division(int a, int b) {
+   if(b == 0) {
+      errorHandler();
+      // return or continue
+   }
+   return a / b;
+}
+==============================================================*/
+
+
+
+///*==============================================================
+double division(int lhs, int rhs) {
+   if(rhs == 0) { // Our precondition bro!
+      throw std::invalid_argument {"Division by zero"}; // <- standart exception
+   }
+   return static_cast<double>(lhs) / static_cast<double>(rhs);
+}
+//==============================================================*/
+
+void positive_division_test()
+{
+    std::cout << "Positive test" << std::endl;
+    
+    const int firstArgument {1};
+    const int secondArgument {2};
+    const double result {division(firstArgument, secondArgument)};
+    
+    std::cout << firstArgument << " " << secondArgument << " " << result << std::endl;
+    assert((result * secondArgument) == firstArgument); // Our postcondition bro!
+    
+    std::cout << "Positive test succeed" << std::endl;
+}
+
+void negative_division_test()
+{
+    std::cout << "Negative test" << std::endl;
+    
+    const int firstArgument {-1};
+    const int secondArgument {-2};
+    const double result {division(firstArgument, secondArgument)};
+    
+    std::cout << firstArgument << " " << secondArgument << " " << result << std::endl;
+    assert(result > 0); // Our postcondition bro too!
+    
+    std::cout << "Negative test succeed" << std::endl;
+}
+
+void zero_division_test()
+{
+    std::cout << "Zero test" << std::endl;
+    const int firstArgument {0};
+    const int secondArgument {0};
+    bool expectedExceptionThrown {false};
+    
+    try
+    {
+        division(firstArgument, secondArgument);
+    }
+    catch (const std::invalid_argument& exception)
+    {
+        std::cerr << exception.what() << std::endl;
+        expectedExceptionThrown = true;   
+    }
+    catch (...)
+    {
+        std::cerr << "Unexpected exception thrown" << std::endl;
+    }
+    assert(expectedExceptionThrown);
+    
+    std::cout << "Positive test succeed" << std::endl;
+}
+
+class Laziness {};
+class Sickness : public Laziness {};
+
+void goToUniversity(bool isFirstLesson)
+{
+    if (isFirstLesson) {
+        throw Sickness {};
+    } else {
+        throw Laziness {};
+    }
+}
+
+void exceptionBox1() // Exception handler lookup example
+{
+    try
+    {
+        goToUniversity(true);
+    }
+    catch (const Laziness& reason) // <- Hmmm... We're sick, but mom screams at us anyway.
+    {
+        std::cout << "STAND UP AND GO TO UNIVERSITY!!!" << std::endl;
+        goToUniversity(false);
+        // throw; <- this guy will rethrow exception to the line 174
+    }
+    catch (const Sickness& reason)
+    {
+        std::cout << "Poor thing..." << std::endl;
+    }
+}
+
+namespace first {
+class Diploma
+{
+public:
+    Diploma() { std::cout << "In progress" << std::endl; }
+    virtual ~Diploma() { std::cout << "Ooops...Let's try next year." << std::endl; }
+};
+}
+
+void exceptionBox2() // stack unwinding example
+{
+    first::Diploma {};
+    goToUniversity(true); // It least we tried.
+}
+
+class Diploma
+{
+public:
+    Diploma(double mark) {
+        std::cout << "Creating diploma..." << std::endl;
+        m_sign = new char[MaxSignSize] {};
+        
+        if (mark < MinMark || mark > MaxMark) {
+            throw std::out_of_range {"Something was wrong in calculation."}; // Oooops!
+        }
+        
+        if (mark < 4.8) {
+            m_sign = "Casual diploma";
+        } else {
+            m_sign = "Super diploma";
+        }
+    }
+    
+    static constexpr size_t MaxSignSize {256};
+    static constexpr double MinMark {2.0};
+    static constexpr double MaxMark {5.0};
+    
+    virtual ~Diploma() {std::cout << "Diploma rejected!" << std::endl;}
+private:
+    char* m_sign;
+    double m_mark;
+};
+
+void exceptionBox3() // Exception in constructor
+{
+    try {
+        Diploma {6.0};
+    } catch(...) {
+        std::cerr << "Damn corruption" << std::endl;
+    }
+}
+
+
+void exceptionSandbox()
+{
+    try {
+        exceptionBox1();
+    } catch (...) { // will handle any exception
+        std::cout << "You shall not pass!" << std::endl; // Don't think at this point that you're immortal. What the point of such life?
+    }
+    
+    try {
+        exceptionBox2();
+    } catch(...) {
+    }
+    
+    exceptionBox3();
+}
+
+int main()
+{
+    positive_division_test();
+    negative_division_test();
+    zero_division_test();
+    
+    exceptionSandbox();
+}
