@@ -1,0 +1,113 @@
+#include <iostream>
+#include <string>
+#include <errno.h>
+#include <cassert>
+#include <stdexcept>
+
+/*==============================================================
+double division(int a, int b) {
+   if(b == 0) {
+      exit(1); // Just go to hell, user!
+   }
+   return a / b;
+}
+==============================================================*/
+
+
+
+/*==============================================================
+static const int DivisionErrorCode {-42};
+double division(int a, int b) {
+   if(b == 0) {
+      return DivisionErrorCode; // 42 will not be computed so often, I hope....
+   }
+   return a / b;
+}
+==============================================================*/
+
+
+
+/*==============================================================
+double division(int a, int b) {
+   if(b == 0) {
+      return 0; // What!?
+   }
+   return a / b;
+}
+==============================================================*/
+
+
+
+/*==============================================================
+#define DIVZERO 0x004
+
+double division(int a, int b) {
+  if(b == 0) {
+      errno = DIVZERO; // Hope user will do something with it...
+      return 0;
+  }
+  return a / b;
+}
+==============================================================*/
+
+
+
+/*==============================================================
+void errorHandler()
+{
+    // What the point of my life? What should I do?
+    return;
+}
+
+double division(int a, int b) {
+   if(b == 0) {
+      errorHandler();
+      // return or continue
+   }
+   return a / b;
+}
+==============================================================*/
+
+void positive_division_test()
+{
+    std::cout << "Positive test" << std::endl;
+    
+    const int firstArgument {1};
+    const int secondArgument {2};
+    const double result {division(firstArgument, secondArgument)};
+    
+    std::cout << firstArgument << " " << secondArgument << " " << result << std::endl;
+    assert((result * secondArgument) == firstArgument); // Our postcondition bro!
+    
+    std::cout << "Positive test succeed" << std::endl;
+}
+
+void negative_division_test()
+{
+    std::cout << "Negative test" << std::endl;
+    
+    const int firstArgument {-1};
+    const int secondArgument {-2};
+    const double result {division(firstArgument, secondArgument)};
+    
+    std::cout << firstArgument << " " << secondArgument << " " << result << std::endl;
+    assert(result > 0); // Our postcondition bro too!
+    
+    std::cout << "Negative test succeed" << std::endl;
+}
+
+void zero_division_test()
+{
+    std::cout << "Zero test" << std::endl;
+    const int firstArgument {0};
+    const int secondArgument {0};
+
+    division(firstArgument, secondArgument);
+}
+
+int main()
+{
+    positive_division_test();
+    negative_division_test();
+    zero_division_test();
+}
