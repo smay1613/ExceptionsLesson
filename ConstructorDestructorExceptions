@@ -1,0 +1,73 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, PHP, Ruby, 
+C#, VB, Perl, Swift, Prolog, Javascript, Pascal, HTML, CSS, JS
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+#include <stdio.h>
+
+#include <iostream>
+#include <cassert>
+#include <stdexcept>
+
+class Diploma
+{
+public:
+    Diploma(double mark) {
+        std::cout << "Creating diploma..." << std::endl;
+        m_sign = new char[MaxSignSize] {};
+        
+        if (mark < MinMark || mark > MaxMark) {
+            throw std::out_of_range {"Something was wrong in calculation."}; // Oooops!
+        }
+        
+        if (mark < 4.8) {
+            m_sign = "Casual diploma";
+        } else {
+            m_sign = "Super diploma";
+        }
+    }
+    
+    static constexpr size_t MaxSignSize {256};
+    static constexpr double MinMark {2.0};
+    static constexpr double MaxMark {5.0};
+    
+    virtual ~Diploma() {
+        std::cout << "Diploma rejected!" << std::endl; 
+        throw std::logic_error {"!?"};
+    }
+private:
+    char* m_sign;
+    double m_mark;
+};
+
+void exceptionBox3() // Exception in constructor
+{
+    try {
+        Diploma {6.0};
+    } catch(...) {
+        std::cerr << "Damn corruption" << std::endl;
+    }
+}
+
+void exceptionBox4() // exception in destructor
+{
+    try {
+        Diploma {3.0};
+    } catch(...) {
+        std::cout << "Catched" << std::endl;
+    }
+}
+
+void exceptionSandbox()
+{    
+    exceptionBox4();
+    exceptionBox3();
+}
+
+int main()
+{
+    exceptionSandbox();
+}
