@@ -1,1 +1,42 @@
 
+#include <iostream>
+#include <cassert>
+#include <stdexcept>
+///*==============================================================
+double division(int lhs, int rhs) {
+   if(rhs == 0) { // Our precondition bro!
+      throw std::invalid_argument {"Division by zero"}; // <- standart exception
+   }
+   return static_cast<double>(lhs) / static_cast<double>(rhs);
+}
+//==============================================================*/
+
+void zero_division_test()
+{
+    std::cout << "Zero test" << std::endl;
+    const int firstArgument {0};
+    const int secondArgument {0};
+    bool expectedExceptionThrown {false};
+    
+    try
+    {
+        division(firstArgument, secondArgument);
+    }
+    catch (const std::invalid_argument& exception)
+    {
+        std::cerr << exception.what() << std::endl;
+        expectedExceptionThrown = true;   
+    }
+    catch (...)
+    {
+        std::cerr << "Unexpected exception thrown" << std::endl;
+    }
+    assert(expectedExceptionThrown);
+    
+    std::cout << "Positive test succeed" << std::endl;
+}
+
+int main()
+{
+    zero_division_test();
+}
