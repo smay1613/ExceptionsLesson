@@ -1,0 +1,56 @@
+Consider this example from ConstructorDestructorExceptions:
+
+//=====================================================
+class Diploma
+{
+public:
+    Diploma(double mark) {
+        std::cout << "Creating diploma..." << std::endl;
+        m_sign = new char[MaxSignSize] {};
+        
+        if (mark < MinMark || mark > MaxMark) {
+            throw std::out_of_range {"Something was wrong in calculation."}; // Oooops!
+        }
+        
+        if (mark < 4.8) {
+            m_sign = "Casual diploma";
+        } else {
+            m_sign = "Super diploma";
+        }
+    }
+    
+    static constexpr size_t MaxSignSize {256};
+    static constexpr double MinMark {2.0};
+    static constexpr double MaxMark {5.0};
+    
+    virtual ~Diploma() {
+        delete[] m_sign;
+        std::cout << "Diploma rejected!" << std::endl; 
+        //throw std::logic_error {"!?"};
+    }
+private:
+    char* m_sign;
+    double m_mark;
+};
+//=======================================================
+
+Your task is to avoid memory leak here. You can do it with "build-in" way, or by own.
+Create class Sign, that will contain some string, represented by char*.
+Sign must has max length property, and if user tries to create too big sign, exception will be thrown)
+When Sign object is created, memory for string representation will be allocated, and when Sign object goes out of scope (it's destructor is called), it will free owned memory.
+This way is called RAII (https://uk.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization).
+
+Ex:
+
+class Sign
+{
+public:
+    static constexpr size_t MaxSize {255};
+    Sign(const char* other); // should properly check 'other' size, and if it's size is more than MaxSize, nothing should be        
+                             // allocated and exception must be thrown.
+    const char* title(); // returns the sign title string.
+    virtual ~Sign(); // title memory deallocation
+private:
+    char* title;
+}
+
