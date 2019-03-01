@@ -1,0 +1,28 @@
+Write a program that converts 24-hour time to 12-hour time. The following is a sample dialogue:
+
+Enter time in 24-hour notation:
+13:07
+
+That is the same as 1:07 PM Again?(y/n)
+y
+
+Enter time in 24-hour notation:
+10:15
+That is the same as 10:15 AM Again?(y/n)
+y
+
+Enter time in 24-hour notation:
+10:65
+
+There is no such time as 10:65
+Try again:
+Enter time in 24-hour notation:
+
+16:05
+That is the same as 4:05 PM
+Again?(y/n)
+n
+End of program
+
+You will define an exception class called TimeFormatMistake. 
+If the user enters an illegal time, like 10:65 or even gibberish like 8&*68, then your program will throw and catch a TimeFormatMistake.
