@@ -202,7 +202,11 @@ public:
     static constexpr double MinMark {2.0};
     static constexpr double MaxMark {5.0};
     
-    virtual ~Diploma() {std::cout << "Diploma rejected!" << std::endl;}
+    virtual ~Diploma() {
+        delete[] m_sign;
+        std::cout << "Diploma rejected!" << std::endl; 
+        //throw std::logic_error {"!?"};
+    }
 private:
     char* m_sign;
     double m_mark;
@@ -218,6 +222,15 @@ void exceptionBox3() // Exception in constructor
 }
 
 
+void exceptionBox4() // exception in destructor
+{
+    try {
+        Diploma {3.0};
+    } catch(...) {
+        std::cout << "Catched" << std::endl;
+    }
+}
+
 void exceptionSandbox()
 {
     try {
@@ -232,6 +245,7 @@ void exceptionSandbox()
     }
     
     exceptionBox3();
+    exceptionBox4();
 }
 
 int main()
