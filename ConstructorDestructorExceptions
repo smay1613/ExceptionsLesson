@@ -35,8 +35,9 @@ public:
     static constexpr double MaxMark {5.0};
     
     virtual ~Diploma() {
+        delete[] m_sign;
         std::cout << "Diploma rejected!" << std::endl; 
-        throw std::logic_error {"!?"};
+        //throw std::logic_error {"!?"};
     }
 private:
     char* m_sign;
